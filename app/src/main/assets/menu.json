@@ -1,0 +1,263 @@
+[
+  {
+    "id": "p01",
+    "name": "Cachapa Sencilla",
+    "category": "Cachapas",
+    "price": 8000,
+    "stock": 20,
+    "description": "Cachapa de puro maíz tierno. Presentación sencilla. Consulta los ingredientes y alérgenos con el negocio.",
+    "active": true
+  },
+  {
+    "id": "p02",
+    "name": "Cachapa Full Queso",
+    "category": "Cachapas",
+    "price": 12000,
+    "stock": 20,
+    "description": "Cachapa de puro maíz tierno. Presentación full queso. Consulta los ingredientes y alérgenos con el negocio.",
+    "active": true
+  },
+  {
+    "id": "p03",
+    "name": "Cachapa Con Jamón",
+    "category": "Cachapas",
+    "price": 10000,
+    "stock": 20,
+    "description": "Cachapa de puro maíz tierno. Presentación con jamón. Consulta los ingredientes y alérgenos con el negocio.",
+    "active": true
+  },
+  {
+    "id": "p04",
+    "name": "Cachapa Con Tocineta",
+    "category": "Cachapas",
+    "price": 12000,
+    "stock": 20,
+    "description": "Cachapa de puro maíz tierno. Presentación con tocineta. Consulta los ingredientes y alérgenos con el negocio.",
+    "active": true
+  },
+  {
+    "id": "p05",
+    "name": "Cachapa Con Carne Mechada",
+    "category": "Cachapas",
+    "price": 15000,
+    "stock": 20,
+    "description": "Cachapa de puro maíz tierno. Presentación con carne mechada. Consulta los ingredientes y alérgenos con el negocio.",
+    "active": true
+  },
+  {
+    "id": "p06",
+    "name": "Cachapa Con Pechuga a la Plancha",
+    "category": "Cachapas",
+    "price": 15000,
+    "stock": 20,
+    "description": "Cachapa de puro maíz tierno. Presentación con pechuga a la plancha. Consulta los ingredientes y alérgenos con el negocio.",
+    "active": true
+  },
+  {
+    "id": "p07",
+    "name": "Cachapa Con Cochino Frito",
+    "category": "Cachapas",
+    "price": 25000,
+    "stock": 20,
+    "description": "Cachapa de puro maíz tierno. Presentación con cochino frito. Consulta los ingredientes y alérgenos con el negocio.",
+    "active": true
+  },
+  {
+    "id": "p08",
+    "name": "Cachapa Con Chorizo",
+    "category": "Cachapas",
+    "price": 15000,
+    "stock": 20,
+    "description": "Cachapa de puro maíz tierno. Presentación con chorizo. Consulta los ingredientes y alérgenos con el negocio.",
+    "active": true
+  },
+  {
+    "id": "p09",
+    "name": "Hamburguesa Especial",
+    "category": "Hamburguesas",
+    "price": 10000,
+    "stock": 20,
+    "description": "Tocineta y queso amarillo, según el menú.",
+    "active": true
+  },
+  {
+    "id": "p10",
+    "name": "Hamburguesa Mixta",
+    "category": "Hamburguesas",
+    "price": 16000,
+    "stock": 20,
+    "description": "Presentación mixta. Consulta sus ingredientes con el negocio.",
+    "active": true
+  },
+  {
+    "id": "p11",
+    "name": "Hamburguesa Trifásica",
+    "category": "Hamburguesas",
+    "price": 22000,
+    "stock": 20,
+    "description": "Presentación trifásica. Consulta sus ingredientes con el negocio.",
+    "active": true
+  },
+  {
+    "id": "p12",
+    "name": "Pizza Chicago",
+    "category": "Pizzas",
+    "price": 25000,
+    "stock": 20,
+    "description": "Pizza de 8 porciones. Consulta los ingredientes de esta variedad con el negocio.",
+    "active": true
+  },
+  {
+    "id": "p13",
+    "name": "Pizza New York",
+    "category": "Pizzas",
+    "price": 25000,
+    "stock": 20,
+    "description": "Pizza de 8 porciones. Consulta los ingredientes de esta variedad con el negocio.",
+    "active": true
+  },
+  {
+    "id": "p14",
+    "name": "Pizza Hawaiana",
+    "category": "Pizzas",
+    "price": 25000,
+    "stock": 20,
+    "description": "Pizza de 8 porciones. Consulta los ingredientes de esta variedad con el negocio.",
+    "active": true
+  },
+  {
+    "id": "p15",
+    "name": "Pizza Pollo Tocineta",
+    "category": "Pizzas",
+    "price": 25000,
+    "stock": 20,
+    "description": "Pizza de 8 porciones. Consulta los ingredientes de esta variedad con el negocio.",
+    "active": true
+  },
+  {
+    "id": "p16",
+    "name": "Pizza Napolitana",
+    "category": "Pizzas",
+    "price": 25000,
+    "stock": 20,
+    "description": "Pizza de 8 porciones. Consulta los ingredientes de esta variedad con el negocio.",
+    "active": true
+  },
+  {
+    "id": "p17",
+    "name": "Pizza Mexicana",
+    "category": "Pizzas",
+    "price": 25000,
+    "stock": 20,
+    "description": "Pizza de 8 porciones. Consulta los ingredientes de esta variedad con el negocio.",
+    "active": true
+  },
+  {
+    "id": "p18",
+    "name": "Pizza Champiñones",
+    "category": "Pizzas",
+    "price": 25000,
+    "stock": 20,
+    "description": "Pizza de 8 porciones. Consulta los ingredientes de esta variedad con el negocio.",
+    "active": true
+  },
+  {
+    "id": "p19",
+    "name": "Pizza La Caprichosa",
+    "category": "Pizzas",
+    "price": 25000,
+    "stock": 20,
+    "description": "Pizza de 8 porciones. Consulta los ingredientes de esta variedad con el negocio.",
+    "active": true
+  },
+  {
+    "id": "p20",
+    "name": "Shawarma",
+    "category": "Otros favoritos",
+    "price": 20000,
+    "stock": 20,
+    "description": "Producto del menú original. Consulta sus ingredientes con el negocio.",
+    "active": true
+  },
+  {
+    "id": "p21",
+    "name": "Salchipapas - porción $15.000",
+    "category": "Combos y porciones",
+    "price": 15000,
+    "stock": 20,
+    "description": "Presentación identificada por su precio en el menú original. Confirma el contenido de la porción con el negocio.",
+    "active": true
+  },
+  {
+    "id": "p22",
+    "name": "Salchipapas - porción $20.000",
+    "category": "Combos y porciones",
+    "price": 20000,
+    "stock": 20,
+    "description": "Presentación identificada por su precio en el menú original. Confirma el contenido de la porción con el negocio.",
+    "active": true
+  },
+  {
+    "id": "p23",
+    "name": "Salchipapas - porción $30.000",
+    "category": "Combos y porciones",
+    "price": 30000,
+    "stock": 20,
+    "description": "Presentación identificada por su precio en el menú original. Confirma el contenido de la porción con el negocio.",
+    "active": true
+  },
+  {
+    "id": "p24",
+    "name": "Salchipollo - porción $15.000",
+    "category": "Combos y porciones",
+    "price": 15000,
+    "stock": 20,
+    "description": "Presentación identificada por su precio en el menú original. Confirma el contenido de la porción con el negocio.",
+    "active": true
+  },
+  {
+    "id": "p25",
+    "name": "Salchipollo - porción $20.000",
+    "category": "Combos y porciones",
+    "price": 20000,
+    "stock": 20,
+    "description": "Presentación identificada por su precio en el menú original. Confirma el contenido de la porción con el negocio.",
+    "active": true
+  },
+  {
+    "id": "p26",
+    "name": "Salchipollo - porción $30.000",
+    "category": "Combos y porciones",
+    "price": 30000,
+    "stock": 20,
+    "description": "Presentación identificada por su precio en el menú original. Confirma el contenido de la porción con el negocio.",
+    "active": true
+  },
+  {
+    "id": "p27",
+    "name": "Picadas - porción $20.000",
+    "category": "Combos y porciones",
+    "price": 20000,
+    "stock": 20,
+    "description": "Presentación identificada por su precio en el menú original. Confirma el contenido de la porción con el negocio.",
+    "active": true
+  },
+  {
+    "id": "p28",
+    "name": "Picadas - porción $30.000",
+    "category": "Combos y porciones",
+    "price": 30000,
+    "stock": 20,
+    "description": "Presentación identificada por su precio en el menú original. Confirma el contenido de la porción con el negocio.",
+    "active": true
+  },
+  {
+    "id": "p29",
+    "name": "Picadas - porción $50.000",
+    "category": "Combos y porciones",
+    "price": 50000,
+    "stock": 20,
+    "description": "Presentación identificada por su precio en el menú original. Confirma el contenido de la porción con el negocio.",
+    "active": true
+  }
+]
