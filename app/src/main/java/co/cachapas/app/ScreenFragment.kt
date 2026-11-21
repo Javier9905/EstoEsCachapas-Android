@@ -1,6 +1,19 @@
 package co.cachapas.app
 
+import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
+import android.os.Build
+import android.os.Looper
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import java.io.File
+import java.util.UUID
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -27,6 +40,61 @@ class ScreenFragment: Fragment() {
  private val recordId get() = arguments?.getString("id")
  private lateinit var root: View
  private var filter = "Todos"; private var query = ""
+ private var selectedImagePath = ""
+ private val imagePicker = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+  if (uri != null && isAdded) host.attempt {
+   val dest = File(requireContext().filesDir, "product_" + UUID.randomUUID() + ".img")
+   requireContext().contentResolver.openInputStream(uri)?.use { input ->
+    dest.outputStream().use { output -> input.copyTo(output) }
+   } ?: error("No fue posible abrir la fotografía.")
+   require(dest.length() in 1..8_000_000L) { "La imagen supera los 8 MB." }
+   selectedImagePath = dest.absolutePath
+   if (::root.isInitialized) showPhoto(R.id.productImagePreview,selectedImagePath)
+  }
+ }
+ private val locationPermission = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
+  if (isAdded) {
+   if (result.values.any { it }) host.attempt { readLocation() }
+   else set(R.id.locationNotice,"Permiso denegado. Puedes escribir la dirección.")
+  }
+ }
+ private fun showPhoto(id: Int, path: String) {
+  val image = v<ImageView>(id)
+  val file = File(path)
+  if (path.isNotBlank() && file.isFile) {
+   image.setImageBitmap(BitmapFactory.decodeFile(file.absolutePath))
+   image.visibility=View.VISIBLE
+  } else image.visibility=View.GONE
+ }
+ private fun requestLocation() {
+  val ctx=requireContext()
+  if (ContextCompat.checkSelfPermission(ctx,Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED ||
+      ContextCompat.checkSelfPermission(ctx,Manifest.permission.ACCESS_COARSE_LOCATION)==PackageManager.PERMISSION_GRANTED) readLocation()
+  else locationPermission.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION))
+ }
+ private fun showLocation(location: Location?) {
+  if (!isAdded || route!="checkout") return
+  if (location==null) { set(R.id.locationNotice,"No fue posible obtener la ubicación. Escribe tu dirección.");return }
+  val coordinates=String.format(Locale.US,"%.6f, %.6f",location.latitude,location.longitude)
+  set(R.id.locationNotice,"Coordenadas: $coordinates. Confirma la dirección de entrega.")
+  val address=v<EditText>(R.id.address)
+  if (address.text.isNullOrBlank()) address.setText("Coordenadas: $coordinates")
+ }
+ private fun readLocation() {
+  val manager=requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+  val providers=listOf(LocationManager.GPS_PROVIDER,LocationManager.NETWORK_PROVIDER).filter { manager.isProviderEnabled(it) }
+  if(providers.isEmpty()) { showLocation(null);return }
+  val cached=providers.mapNotNull { manager.getLastKnownLocation(it) }.maxByOrNull { it.time }
+  if(cached!=null && System.currentTimeMillis()-cached.time<300_000L) { showLocation(cached);return }
+  set(R.id.locationNotice,"Consultando ubicación actual...")
+  if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.R) {
+   manager.getCurrentLocation(providers.first(),null,ContextCompat.getMainExecutor(requireContext())) { showLocation(it) }
+  } else {
+   manager.requestSingleUpdate(providers.first(),object: LocationListener {
+    override fun onLocationChanged(location: Location) { showLocation(location) }
+   },Looper.getMainLooper())
+  }
+ }
  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
   val layout = when(route) {
    "home" -> R.layout.fragment_home;"catalog" -> R.layout.fragment_catalog;"detail" -> R.layout.fragment_detail
@@ -46,9 +114,12 @@ class ScreenFragment: Fragment() {
  private fun button(parent: LinearLayout, text: String, action: () -> Unit) {
   parent.addView(MaterialButton(requireContext()).apply { this.text=text; layoutParams=LinearLayout.LayoutParams(-1,-2);setOnClickListener { host.attempt(action) } })
  }
- private fun card(parent: LinearLayout, tag: String, title: String, body: String, actions: List<Pair<String, () -> Unit>> = emptyList()) {
+ private fun card(parent: LinearLayout, tag: String, title: String, body: String, actions: List<Pair<String, () -> Unit>> = emptyList(), imagePath: String = "") {
   val card = layoutInflater.inflate(R.layout.item_card,parent,false)
   card.findViewById<TextView>(R.id.cardTag).text = tag
+  if (imagePath.isNotBlank() && File(imagePath).isFile) card.findViewById<ImageView>(R.id.cardPhoto).apply {
+   setImageBitmap(BitmapFactory.decodeFile(imagePath)); visibility = View.VISIBLE
+  }
   card.findViewById<TextView>(R.id.cardTitle).text = title
   card.findViewById<TextView>(R.id.cardBody).text = body
   val row = card.findViewById<LinearLayout>(R.id.cardActions)
@@ -61,6 +132,7 @@ class ScreenFragment: Fragment() {
  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
   super.onViewCreated(view,savedInstanceState)
   if(store.current == null) { host.logout(false);return }
+  selectedImagePath=savedInstanceState?.getString("selectedImagePath").orEmpty()
   host.attempt {
    when(route) {
     "home" -> home();"catalog" -> catalog(savedInstanceState);"detail" -> detail();"cart" -> cart();"checkout" -> checkout()
@@ -71,9 +143,9 @@ class ScreenFragment: Fragment() {
    }
   }
  }
- override fun onSaveInstanceState(outState: Bundle) { outState.putString("filter",filter);outState.putString("query",query);super.onSaveInstanceState(outState) }
+ override fun onSaveInstanceState(outState: Bundle) { outState.putString("filter",filter);outState.putString("query",query);outState.putString("selectedImagePath",selectedImagePath);super.onSaveInstanceState(outState) }
  private fun productCard(parent: LinearLayout,p: Product) {
-  card(parent,p.category.uppercase(),p.name,Rules.money(p.price)+" · "+if(p.stock>0) "Disponible" else "Agotado",listOf("Ver producto" to { go("detail",p.id) }))
+  card(parent,p.category.uppercase(),p.name,Rules.money(p.price)+" · "+if(p.stock>0) "Disponible" else "Agotado",listOf("Ver producto" to { go("detail",p.id) }),p.imagePath)
  }
  private fun home() {
   set(R.id.greeting,"Hola, ${store.current!!.name.substringBefore(' ')}")
@@ -105,6 +177,7 @@ class ScreenFragment: Fragment() {
   val p=store.products.find { it.id==recordId } ?: error("Producto no disponible.")
   set(R.id.title,p.name);set(R.id.category,p.category);set(R.id.price,Rules.money(p.price));set(R.id.description,p.description)
   set(R.id.stock,if(p.active) "Disponibilidad de prueba: ${p.stock} unidades" else "Producto desactivado")
+  if (p.imagePath.isNotBlank()) showPhoto(R.id.detailPhoto,p.imagePath)
   v<EditText>(R.id.quantity).setText("1")
   v<View>(R.id.add).isEnabled=p.active && p.stock>0
   click(R.id.add) { val q=input(R.id.quantity).toIntOrNull() ?: 0;require(q>0) { "Escribe una cantidad válida." };store.add(p.id,q);host.message("${p.name} se agregó al carrito.") }
@@ -137,6 +210,7 @@ class ScreenFragment: Fragment() {
    }
    override fun onNothingSelected(parent: AdapterView<*>?) = Unit
   }
+  click(R.id.captureLocation) { requestLocation() }
   spinner(R.id.paymentResult,listOf("Aprobado", "Pendiente", "Rechazado"))
   click(R.id.pay) {
    require(v<Spinner>(R.id.deliveryMode).selectedItemPosition==0) { "La tarifa de domicilio aún no está definida." }
@@ -191,7 +265,7 @@ class ScreenFragment: Fragment() {
   store.products.forEach { p -> card(parent,p.category+if(p.active) " · Activo" else " · Inactivo",p.name,"${Rules.money(p.price)} · ${p.stock} unidades",buildList {
    add("Editar producto" to { go("product_form",p.id) })
    if(p.active) add("Eliminar del menú" to { confirm("¿Dar de baja ${p.name}? El historial de pedidos se conserva.") { store.deactivateProduct(p.id);products() } })
-  }) }
+  },p.imagePath) }
   if(parent.childCount==0) empty(parent)
   click(R.id.create) { go("product_form") }
  }
@@ -200,8 +274,11 @@ class ScreenFragment: Fragment() {
   set(R.id.title,if(p==null) "Crear producto" else "Editar producto")
   v<EditText>(R.id.name).setText(p?.name.orEmpty());v<EditText>(R.id.price).setText(p?.price?.toString().orEmpty());v<EditText>(R.id.stock).setText(p?.stock?.toString() ?: "20");v<EditText>(R.id.description).setText(p?.description.orEmpty())
   spinner(R.id.category,Rules.categories,Rules.categories.indexOf(p?.category).coerceAtLeast(0));v<CheckBox>(R.id.active).isChecked=p?.active ?: true
+  if (selectedImagePath.isBlank()) selectedImagePath=p?.imagePath.orEmpty()
+  showPhoto(R.id.productImagePreview,selectedImagePath)
+  click(R.id.pickProductImage) { imagePicker.launch("image/*") }
   click(R.id.save) {
-   store.saveProduct(p?.id,input(R.id.name),v<Spinner>(R.id.category).selectedItem.toString(),input(R.id.price).toLongOrNull() ?: 0,input(R.id.stock).toIntOrNull() ?: -1,input(R.id.description),v<CheckBox>(R.id.active).isChecked)
+   store.saveProduct(p?.id,input(R.id.name),v<Spinner>(R.id.category).selectedItem.toString(),input(R.id.price).toLongOrNull() ?: 0,input(R.id.stock).toIntOrNull() ?: -1,input(R.id.description),v<CheckBox>(R.id.active).isChecked,selectedImagePath)
    host.navigate("products",root=true)
   }
   click(R.id.back) { host.back() }
