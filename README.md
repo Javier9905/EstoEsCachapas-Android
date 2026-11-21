@@ -8,9 +8,9 @@ Aplicación Android en Kotlin con interfaz XML y tres perfiles: **Comprador, Ven
 
 **Prototipo académico local. No es una aplicación de comercio electrónico lista para producción.**
 
-- Implementado en el código: navegación por rol, registro/ingreso local, CRUD local, carrito, historial, reportes de prueba y soporte de biometría.
-- **Pendiente:** Firebase Authentication, Cloud Firestore, Firebase Storage, imágenes desde cámara/galería, geolocalización para domicilio y pasarela de pagos certificada.
-- **No verificado aquí:** compilación actual en Android Studio, funcionamiento en teléfono físico y grabación del video de lanzamiento.
+- Implementado en el código: navegación por rol, registro/ingreso local, CRUD local, carrito, historial, reportes de prueba, soporte de biometría, selector de fotografías guardadas en el dispositivo y captura puntual de coordenadas con permiso.
+- **Pendiente:** Firebase Authentication, Cloud Firestore, Firebase Storage, subida de imágenes a Firebase Storage, geolocalización asociada a pedidos con domicilio habilitado y pasarela de pagos certificada.
+- **No verificado aquí:** compilación actual en Android Studio, funcionamiento en teléfono físico y grabación del video de lanzamiento. Se añadió una comprobación automática en `.github/workflows/android-ci.yml`, pendiente de comprobar que se ejecute correctamente en GitHub Actions.
 - El selector de pago actual solo simula `Aprobado / Pendiente / Rechazado`; **no hace cobros**.
 - El archivo `APK/Cachapas.apk` pertenece a la actividad anterior y no demuestra cumplimiento de esta entrega final.
 
