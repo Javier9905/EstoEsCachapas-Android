@@ -1,80 +1,97 @@
-# Manual de usuario — Esto Es Cachapas y Algo Más
+# Manual de usuario
+## Esto Es Cachapas y Algo Más
 
-**Asignatura:** Desarrollo de Aplicaciones Móviles Nativas  
+**Aplicación móvil Android**  
 **Autor:** Javier Andrés Barrera Cárdenas  
-**Versión documentada:** prototipo Android local (noviembre de 2026)
+**Programa:** Ingeniería de Software · UCompensar
 
-## Antes de comenzar
+### Presentación
 
-En este manual muestro el recorrido por las tres cuentas del aplicativo, porque cada rol encuentra diferentes opciones. Los pasos describen lo que se observa en el código; todavía hacen falta **capturas originales de un teléfono físico** para completar la versión final del PDF.
+Esto Es Cachapas y Algo Más es una aplicación que reúne el menú del negocio en un solo lugar y permite organizar la consulta de productos y los pedidos. Su interfaz cambia según el perfil de acceso, dado que el comprador necesita encontrar los alimentos de una forma sencilla, mientras que el vendedor y el administrador cuentan con opciones para manejar la información del catálogo y del negocio.
 
-## 1. Instalación y acceso
+El sistema utiliza tres perfiles: **comprador, vendedor y administrador**.
 
-Descarga el repositorio, abre su carpeta raíz en Android Studio y espera a que finalice **Gradle Sync**. Conecta un teléfono Android compatible y ejecuta la aplicación. El archivo `APK/Cachapas.apk` corresponde a una versión previa y no prueba que las integraciones de esta actividad estén terminadas.
+## 1. Inicio de sesión
 
-| Rol | Cuenta de demostración |
+Al abrir la aplicación aparece la pantalla de acceso, donde se escriben el correo y la contraseña. También se encuentran las opciones de registro y recuperación de contraseña.
+
+| Perfil | Correo de demostración |
 |---|---|
 | Comprador | `comprador@cachapas.demo` |
 | Vendedor | `vendedor@cachapas.demo` |
 | Administrador | `admin@cachapas.demo` |
 
-**Contraseña compartida para las cuentas de prueba:** `Cachapas2026!`  
-Estas credenciales son solo para pruebas locales; no deben reutilizarse en producción.
+**Contraseña para las tres cuentas de demostración:** `Cachapas2026!`.
 
-## 2. Comprador
+Estas cuentas permiten recorrer las funciones de cada perfil. El registro de una cuenta nueva corresponde al perfil comprador.
 
-1. Abre la app y entra con la cuenta de comprador.
-2. Consulta el Inicio y selecciona Catálogo.
-3. Busca una cachapa por su nombre o categoría y abre `Ver producto`.
-4. Revisa precio y disponibilidad, indica la cantidad y usa `Agregar al carrito`.
-5. Entra en Carrito, modifica cantidades si hace falta y revisa el total.
-6. Selecciona `Confirmar pedido`; completa nombre y teléfono, marca la recogida local y acepta las condiciones.
-7. Elige un **resultado de pago simulado**; no se cobra dinero.
-8. Abre Historial/Pedidos y consulta el detalle.
-9. Desde Perfil edita los datos o activa la biometría si el dispositivo es compatible.
+## 2. Perfil comprador
 
-**Capturas por añadir:** acceso, inicio, catálogo, detalle, carrito, confirmación de pedido, historial y perfil.
+### Consultar el menú
 
-## 3. Vendedor
+Desde **Inicio** se muestran productos destacados del negocio y se puede ingresar a **Catálogo**. Allí se encuentran las categorías disponibles, una opción de búsqueda y los productos con sus respectivos precios.
 
-1. Entra con `vendedor@cachapas.demo`.
-2. Abre el Panel para consultar productos y pedidos.
-3. En Productos pulsa `Crear producto` y completa nombre, categoría, precio, inventario y descripción.
-4. Opcionalmente elige una foto de galería y guarda. La foto queda en la instalación local, no en Firebase Storage.
-5. Usa `Editar producto` para corregir valores y `Eliminar del menú` para darlo de baja lógicamente.
-6. Abre Pedidos y, si hay un pedido con pago simulado aprobado, cambia su estado por las opciones permitidas.
+Al seleccionar **Ver producto**, la aplicación muestra el nombre, la descripción, el valor y las unidades disponibles.
 
-**Capturas por añadir:** panel, productos, formulario y seguimiento del pedido.
+### Agregar productos al carrito
 
-## 4. Administrador
+Dentro del detalle se indica la cantidad deseada y se selecciona **Agregar al carrito**. En **Carrito** aparecen los artículos elegidos, el precio por unidad y el total, en ese caso se puede aumentar o disminuir la cantidad, retirar un producto o vaciar el carrito.
 
-1. Entra con `admin@cachapas.demo`.
-2. Abre Usuarios y consulta las cuentas disponibles.
-3. Crea o edita una cuenta y asigna su rol.
-4. Si corresponde, desactiva una cuenta desde su gestión.
-5. Revisa Productos, Pedidos y Reporte de ventas para consultar los registros de prueba.
+### Registrar un pedido
 
-**Capturas por añadir:** usuarios, edición de rol, productos y reporte.
+El botón de confirmación permite revisar los artículos antes de continuar. Se diligencian los datos de contacto, se selecciona la modalidad de recogida disponible y se aceptan las condiciones de la demostración.
 
-## 5. Advertencias
+En esta versión se puede elegir un resultado de pago **Aprobado**, **Pendiente** o **Rechazado**. Estos estados son de prueba y no producen cargos bancarios.
 
-- Los datos se almacenan localmente en el teléfono: no se sincronizan con Firebase.
-- Los pagos son simulados: no existe confirmación bancaria.
-- La recuperación de contraseña muestra un código local, no envía correo.
-- Puedes solicitar coordenadas desde la pantalla de pedido aceptando el permiso de ubicación. La tarifa y cobertura de domicilios aún no están implementadas, por eso la compra con domicilio sigue deshabilitada.
-- Si la huella no está disponible, entra por correo y contraseña.
+### Consultar pedidos
 
-## 6. Lista para completar el PDF del manual
+En **Pedidos** se encuentra el historial de la cuenta. Cada registro presenta su número, fecha, total, estado de pago y detalle de los artículos.
 
-- [ ] Captura 1: acceso
-- [ ] Captura 2: catálogo
-- [ ] Captura 3: detalle y carrito
-- [ ] Captura 4: formulario de pedido
-- [ ] Captura 5: historial
-- [ ] Captura 6: panel vendedor
-- [ ] Captura 7: edición de producto
-- [ ] Captura 8: panel administrador
-- [ ] Captura 9: gestión de usuarios
-- [ ] Captura 10: reporte de ventas
+### Perfil y cuenta
 
-**Repositorio:** https://github.com/Javier9905/EstoEsCachapas-Android
+La sección **Perfil** reúne los datos de contacto, la dirección y las opciones de seguridad. Allí también se puede activar la biometría cuando el teléfono tiene un sensor compatible y una huella configurada.
+
+## 3. Perfil vendedor
+
+El vendedor entra a un panel desde el cual consulta los productos del menú y los pedidos registrados.
+
+### Gestión de productos
+
+En **Productos**, el botón **Crear producto** abre un formulario con los campos de nombre, categoría, precio, existencias y descripción. Es posible elegir una fotografía desde la galería del teléfono, de modo que el artículo tenga una referencia visual.
+
+Un producto existente se modifica desde **Editar producto**. La opción **Eliminar del menú** lo desactiva del catálogo, conservando los pedidos donde haya sido incluido.
+
+### Gestión de pedidos
+
+En **Pedidos** se consultan los registros y, cuando corresponde, se utilizan los controles para avanzar por los estados del proceso: recibido, en preparación, listo para recoger y entregado.
+
+## 4. Perfil administrador
+
+El administrador dispone de un panel para consultar la información general del negocio.
+
+En **Usuarios** se visualizan las cuentas registradas, sus perfiles y estados. Las opciones de administración permiten crear usuarios, editar datos, cambiar roles y desactivar accesos.
+
+En **Productos** se consulta el catálogo y en **Pedidos** se revisan las solicitudes registradas. La sección **Reporte** presenta un resumen de los resultados de prueba, incluidos totales y productos vendidos en la simulación.
+
+## 5. Acceso biométrico y recuperación de contraseña
+
+La autenticación por huella se activa desde **Perfil** después de iniciar sesión normalmente. El teléfono presenta el cuadro de autenticación propio de Android; la aplicación no guarda imágenes de huellas digitales.
+
+La recuperación de contraseña de la versión de demostración utiliza un código mostrado dentro de la misma aplicación. Ese código no llega por correo electrónico.
+
+## 6. Ubicación y direcciones
+
+En la pantalla del pedido existe una opción para consultar la ubicación del teléfono. Si se concede el permiso, el sistema presenta las coordenadas obtenidas y permite revisar la dirección. La dirección también puede escribirse manualmente.
+
+La modalidad habilitada para completar pedidos de prueba es **recogida en el local**; la información sobre domicilios se muestra como referencia y no incluye una tarifa calculada.
+
+## 7. Información sobre los datos
+
+Las cuentas, el catálogo, el carrito y los pedidos de esta versión utilizan almacenamiento local. Por eso, la información se conserva en el dispositivo donde se usa la aplicación y no se sincroniza automáticamente con otros teléfonos.
+
+Las operaciones con dinero son simuladas y los resultados aparecen únicamente para mostrar el recorrido de una compra.
+
+---
+
+**Esto Es Cachapas y Algo Más**  
+Una forma de consultar el menú y organizar los pedidos desde Android.
