@@ -48,15 +48,15 @@ El catálogo inicial proviene de `app/src/main/assets/menu.json`. Los productos 
 | Autenticación para tres roles | Implementada localmente | Migrar a Firebase Auth y reglas de servidor |
 | Biometría | Código implementado | Probar en dispositivo físico |
 | CRUD de usuarios en Firestore | No implementado | Configurar Firestore y reglas seguras |
-| CRUD de productos con imágenes | CRUD local | Cámara/galería y Firebase Storage |
+| CRUD de productos con imágenes | CRUD local y foto seleccionable de galería (almacenamiento privado local) | Subir fotografías a Firebase Storage y verificar cámara |
 | Carrito, órdenes e historial en Firestore | Locales | Sincronización y persistencia segura |
-| Geolocalización para entrega | No implementada | Permisos de ubicación y captura a demanda |
+| Geolocalización para entrega | Captura de coordenadas bajo permiso en pantalla de pedido | Asociarlas a entregas habilitadas y sincronizar datos |
 | Pagos certificados | Simulación | Pasarela en sandbox, backend y confirmación de transacción |
 | ZIP sin errores de compilación | No verificado en esta revisión | Gradle Sync, compilación y empaquetado |
 | Video de lanzamiento en celular | Pendiente | Grabar 1 minuto en dispositivo físico |
 | Capturas en manual | Pendientes | Capturar pantallas reales de las tres cuentas |
 
-## 8. Tecnologías
+## 8. Ampliaciones realizadas en el repositorio\n\nSe añadió la selección de una imagen de galería al formulario de productos y su copia al almacenamiento privado del dispositivo, junto con el campo `imagePath` de la entidad Product. También se incorporó una solicitud puntual de ubicación con permisos de Android en la pantalla de confirmación. La entrega a domicilio sigue bloqueada mientras no exista tarifa y cobertura validada. Estas ampliaciones requieren compilarse y probarse en un teléfono para considerarlas verificadas.\n\n## 9. Tecnologías
 
 Kotlin 2.0.21, Android Gradle Plugin 8.7.3, Java 17, Android SDK 35, minSdk 26, XML, AppCompat, Fragments, Material Components y AndroidX Biometric, según los archivos de configuración existentes.
 
