@@ -91,12 +91,12 @@ class Store private constructor(context: Context) {
   require(users.none { it.id != u.id && it.email.equals(email.trim(), true) }) { "El correo ya está registrado." }
   u.name = name.trim(); u.email = email.trim().lowercase(); u.phone = phone.trim(); u.address = address.trim(); persist()
  }
- fun saveProduct(id: String?, name: String, category: String, price: Long, stock: Int, description: String, active: Boolean) {
+ fun saveProduct(id: String?, name: String, category: String, price: Long, stock: Int, description: String, active: Boolean, imagePath: String = "") {
   require(current?.role?.let(Rules::canManage) == true) { "Acceso reservado al negocio." }
   Rules.product(name, price, stock); require(category in Rules.categories); require(description.trim().isNotEmpty()) { "Escribe una descripción." }
   val p = products.find { it.id == id }
-  if (p == null) products.add(Product(UUID.randomUUID().toString(), name.trim(), category, price, stock, description.trim(), active))
-  else { p.name = name.trim(); p.category = category; p.price = price; p.stock = stock; p.description = description.trim(); p.active = active }
+  if (p == null) products.add(Product(UUID.randomUUID().toString(), name.trim(), category, price, stock, description.trim(), active, imagePath))
+  else { p.name = name.trim(); p.category = category; p.price = price; p.stock = stock; p.description = description.trim(); p.active = active; p.imagePath = imagePath }
   persist()
  }
  fun deactivateProduct(id: String) {
@@ -147,7 +147,7 @@ class Store private constructor(context: Context) {
   }
   o.status = next; persist()
  }
- private fun readProduct(j: JSONObject) = Product(j.getString("id"), j.getString("name"), j.getString("category"), j.getLong("price"), j.getInt("stock"), j.getString("description"), j.optBoolean("active", true))
+ private fun readProduct(j: JSONObject) = Product(j.getString("id"), j.getString("name"), j.getString("category"), j.getLong("price"), j.getInt("stock"), j.getString("description"), j.optBoolean("active", true), j.optString("imagePath", ""))
  private fun load(j: JSONObject) {
   j.getJSONArray("products").each { products.add(readProduct(it)) }
   j.getJSONArray("users").each { users.add(User(it.getString("id"), it.getString("name"), it.getString("email"), Role.valueOf(it.getString("role")), it.getString("salt"), it.getString("hash"), it.getBoolean("active"), it.optString("phone"), it.optString("address"))) }
@@ -160,7 +160,7 @@ class Store private constructor(context: Context) {
  private fun JSONArray.each(block: (JSONObject) -> Unit) { for (i in 0 until length()) block(getJSONObject(i)) }
  private fun persist() {
   val j = JSONObject()
-  j.put("products", JSONArray(products.map { p -> JSONObject().put("id",p.id).put("name",p.name).put("category",p.category).put("price",p.price).put("stock",p.stock).put("description",p.description).put("active",p.active) }))
+  j.put("products", JSONArray(products.map { p -> JSONObject().put("id",p.id).put("name",p.name).put("category",p.category).put("price",p.price).put("stock",p.stock).put("description",p.description).put("active",p.active).put("imagePath",p.imagePath) }))
   j.put("users", JSONArray(users.map { u -> JSONObject().put("id",u.id).put("name",u.name).put("email",u.email).put("role",u.role.name).put("salt",u.salt).put("hash",u.hash).put("active",u.active).put("phone",u.phone).put("address",u.address) }))
   j.put("orders", JSONArray(orders.map { o -> JSONObject().put("id",o.id).put("userId",o.userId).put("created",o.created).put("lines",JSONArray(o.lines.map { l -> JSONObject().put("productId",l.productId).put("name",l.name).put("price",l.price).put("quantity",l.quantity) })).put("total",o.total).put("contact",o.contact).put("phone",o.phone).put("address",o.address).put("note",o.note).put("payment",o.payment).put("status",o.status) }))
   val cs = JSONObject(); carts.forEach { (uid,c) -> cs.put(uid,JSONObject(c as Map<*,*>)) }; j.put("carts",cs)
