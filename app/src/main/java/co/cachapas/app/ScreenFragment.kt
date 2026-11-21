@@ -41,6 +41,7 @@ class ScreenFragment: Fragment() {
  private lateinit var root: View
  private var filter = "Todos"; private var query = ""
  private var selectedImagePath = ""
+ /** Copia la imagen elegida por el usuario al almacenamiento privado de la app. */
  private val imagePicker = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
   if (uri != null && isAdded) host.attempt {
    val dest = File(requireContext().filesDir, "product_" + UUID.randomUUID() + ".img")
@@ -52,6 +53,7 @@ class ScreenFragment: Fragment() {
    if (::root.isInitialized) showPhoto(R.id.productImagePreview,selectedImagePath)
   }
  }
+ /** Solicita únicamente los permisos de ubicación necesarios para esta operación. */
  private val locationPermission = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
   if (isAdded) {
    if (result.values.any { it }) host.attempt { readLocation() }
@@ -66,6 +68,7 @@ class ScreenFragment: Fragment() {
    image.visibility=View.VISIBLE
   } else image.visibility=View.GONE
  }
+ /** Pide permiso bajo demanda; no rastrea ubicaciones en segundo plano. */
  private fun requestLocation() {
   val ctx=requireContext()
   if (ContextCompat.checkSelfPermission(ctx,Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED ||
@@ -80,6 +83,7 @@ class ScreenFragment: Fragment() {
   val address=v<EditText>(R.id.address)
   if (address.text.isNullOrBlank()) address.setText("Coordenadas: $coordinates")
  }
+ /** Obtiene una ubicación puntual del sistema para ayudar a llenar la dirección. */
  private fun readLocation() {
   val manager=requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
   val fine=ContextCompat.checkSelfPermission(requireContext(),Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED
@@ -116,6 +120,7 @@ class ScreenFragment: Fragment() {
  private fun button(parent: LinearLayout, text: String, action: () -> Unit) {
   parent.addView(MaterialButton(requireContext()).apply { this.text=text; layoutParams=LinearLayout.LayoutParams(-1,-2);setOnClickListener { host.attempt(action) } })
  }
+ /** Construye una tarjeta reutilizable y muestra la foto cuando esté disponible. */
  private fun card(parent: LinearLayout, tag: String, title: String, body: String, actions: List<Pair<String, () -> Unit>> = emptyList(), imagePath: String = "") {
   val card = layoutInflater.inflate(R.layout.item_card,parent,false)
   card.findViewById<TextView>(R.id.cardTag).text = tag
@@ -149,6 +154,7 @@ class ScreenFragment: Fragment() {
  private fun productCard(parent: LinearLayout,p: Product) {
   card(parent,p.category.uppercase(),p.name,Rules.money(p.price)+" · "+if(p.stock>0) "Disponible" else "Agotado",listOf("Ver producto" to { go("detail",p.id) }),p.imagePath)
  }
+ /** Muestra productos destacados en la página de inicio del comprador. */
  private fun home() {
   set(R.id.greeting,"Hola, ${store.current!!.name.substringBefore(' ')}")
   val parent = v<LinearLayout>(R.id.items)
@@ -156,6 +162,7 @@ class ScreenFragment: Fragment() {
   if(parent.childCount==0) empty(parent,"Explora el menú para encontrar productos disponibles.")
   click(R.id.menu) { go("catalog") };click(R.id.orders) { go("orders") };click(R.id.poster) { go("poster") }
  }
+ /** Inicializa filtros y búsqueda del catálogo de productos. */
  private fun catalog(saved: Bundle?) {
   filter=saved?.getString("filter") ?: "Todos";query=saved?.getString("query").orEmpty()
   v<EditText>(R.id.search).setText(query)
@@ -169,12 +176,14 @@ class ScreenFragment: Fragment() {
   v<EditText>(R.id.search).doAfterTextChanged { query=it.toString();renderCatalog() }
   renderCatalog()
  }
+ /** Actualiza los resultados sin reconstruir la navegación. */
  private fun renderCatalog() {
   val list = store.products.filter { it.active && (filter=="Todos" || it.category==filter) && it.name.contains(query,true) }
   set(R.id.count,"${list.size} productos y presentaciones")
   val parent=v<LinearLayout>(R.id.items);parent.removeAllViews();list.forEach { productCard(parent,it) }
   if(list.isEmpty()) empty(parent,"No encontramos productos con esa búsqueda.")
  }
+ /** Presenta la ficha, existencia y acciones para el carrito. */
  private fun detail() {
   val p=store.products.find { it.id==recordId } ?: error("Producto no disponible.")
   set(R.id.title,p.name);set(R.id.category,p.category);set(R.id.price,Rules.money(p.price));set(R.id.description,p.description)
@@ -185,6 +194,7 @@ class ScreenFragment: Fragment() {
   click(R.id.add) { val q=input(R.id.quantity).toIntOrNull() ?: 0;require(q>0) { "Escribe una cantidad válida." };store.add(p.id,q);host.message("${p.name} se agregó al carrito.") }
   click(R.id.back) { host.back() }
  }
+ /** Muestra las líneas del carrito y calcula su total de prueba. */
  private fun cart() {
   val parent=v<LinearLayout>(R.id.items);parent.removeAllViews()
   val lines=store.cartLines()
@@ -200,6 +210,7 @@ class ScreenFragment: Fragment() {
   v<View>(R.id.checkout).isEnabled=lines.isNotEmpty();v<View>(R.id.clear).isEnabled=lines.isNotEmpty()
   click(R.id.checkout) { go("checkout") };click(R.id.clear) { confirm("¿Vaciar el carrito?") { store.clearCart();cart() } }
  }
+ /** Presenta datos de recogida, ubicación y pago SIMULADO. */
  private fun checkout() {
   val u=store.current!!;val lines=store.cartLines();require(lines.isNotEmpty()) { "El carrito está vacío." }
   set(R.id.summary,lines.joinToString("\n") { "${it.quantity} × ${it.name}: ${Rules.money(it.price*it.quantity)}" }+"\n\nTotal a confirmar: "+Rules.money(Rules.total(lines))+"\nRecogida: $0")
@@ -223,12 +234,14 @@ class ScreenFragment: Fragment() {
   }
   click(R.id.back) { host.back() }
  }
+ /** Lista pedidos accesibles de acuerdo con el rol de la sesión. */
  private fun orders() {
   val u=store.current!!;set(R.id.subtitle,if(u.role==Role.BUYER) "Tus pedidos y pagos de prueba" else "Pedidos recibidos por el negocio")
   val parent=v<LinearLayout>(R.id.items);val orders=store.visibleOrders()
   orders.forEach { o -> card(parent,o.status.uppercase(),o.id,"${date(o.created)}\n${Rules.money(o.total)} · Pago ${o.payment.lowercase()}",listOf("Consultar pedido" to { go("order_detail",o.id) })) }
   if(orders.isEmpty()) empty(parent,"Aún no hay pedidos. Completa una compra de prueba para ver el recorrido.")
  }
+ /** Muestra la trazabilidad del pedido y sus cambios válidos de estado. */
  private fun orderDetail() {
   val o=store.visibleOrders().find { it.id==recordId } ?: error("Pedido no disponible para esta cuenta.")
   set(R.id.title,o.id);set(R.id.status,"${o.status} · Pago: ${o.payment} (prueba)")
@@ -243,6 +256,7 @@ class ScreenFragment: Fragment() {
   }
   click(R.id.back) { host.back() }
  }
+ /** Administra perfil y activación biométrica local. */
  private fun profile() {
   val u=store.current!!;set(R.id.role,"${u.role.label} · ${u.email}")
   v<EditText>(R.id.name).setText(u.name);v<EditText>(R.id.email).setText(u.email);v<EditText>(R.id.phone).setText(u.phone);v<EditText>(R.id.address).setText(u.address)
@@ -253,6 +267,7 @@ class ScreenFragment: Fragment() {
   click(R.id.orders) { go("orders") };click(R.id.policies) { go("policies") }
   click(R.id.logout) { confirm("¿Cerrar la sesión? Se desactivará el acceso biométrico de esta cuenta.") { host.logout(true) } }
  }
+ /** Muestra métricas de prueba y accesos de vendedor o administrador. */
  private fun panel() {
   val u=store.current!!;val paid=store.orders.filter { it.payment=="Aprobado" && it.status!="Cancelado" }
   set(R.id.title,if(u.role==Role.ADMIN) "Administración" else "Panel de ventas")
@@ -261,6 +276,7 @@ class ScreenFragment: Fragment() {
   button(parent,"Gestionar productos") { go("products") };button(parent,"Consultar pedidos recibidos") { go("orders") }
   if(u.role==Role.ADMIN) { button(parent,"Gestionar usuarios") { go("users") };button(parent,"Reporte de ventas") { go("report") } }
  }
+ /** Lista productos y herramientas locales de gestión del negocio. */
  private fun products() {
   require(Rules.canManage(store.current!!.role))
   val parent=v<LinearLayout>(R.id.items);parent.removeAllViews()
@@ -271,6 +287,7 @@ class ScreenFragment: Fragment() {
   if(parent.childCount==0) empty(parent)
   click(R.id.create) { go("product_form") }
  }
+ /** Crea o edita productos, incluida la selección opcional de foto local. */
  private fun productForm() {
   val p=store.products.find { it.id==recordId }
   set(R.id.title,if(p==null) "Crear producto" else "Editar producto")
@@ -285,6 +302,7 @@ class ScreenFragment: Fragment() {
   }
   click(R.id.back) { host.back() }
  }
+ /** Lista cuentas locales solo para el administrador. */
  private fun users() {
   require(store.current!!.role==Role.ADMIN)
   val parent=v<LinearLayout>(R.id.items);parent.removeAllViews()
@@ -294,6 +312,7 @@ class ScreenFragment: Fragment() {
   }) }
   click(R.id.create) { go("user_form") }
  }
+ /** Valida edición de cuentas y permisos administrativos. */
  private fun userForm() {
   require(store.current!!.role==Role.ADMIN)
   val u=store.users.find { it.id==recordId };set(R.id.title,if(u==null) "Crear usuario" else "Editar usuario")
@@ -307,6 +326,7 @@ class ScreenFragment: Fragment() {
   }
   click(R.id.back) { host.back() }
  }
+ /** Resume ventas de demostración; no representa ingresos confirmados. */
  private fun report() {
   require(store.current!!.role==Role.ADMIN)
   val paid=store.orders.filter { it.payment=="Aprobado" && it.status!="Cancelado" };val total=paid.sumOf { it.total }
