@@ -20,6 +20,7 @@ class BiometricGate(private val context: Context) {
  private val alias = "cachapas_local_session"
  fun available() = BiometricManager.from(context).canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG) == BiometricManager.BIOMETRIC_SUCCESS
  fun enabled(uid: String?) = uid != null && prefs.getString("uid", null) == uid && prefs.contains("payload")
+ /** Destruye los materiales criptográficos locales vinculados a la sesión. */
  fun clear() { prefs.edit().clear().apply(); val ks = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }; if (ks.containsAlias(alias)) ks.deleteEntry(alias) }
  private fun key(create: Boolean): SecretKey {
   val ks = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
@@ -33,6 +34,7 @@ class BiometricGate(private val context: Context) {
   }
   return ks.getKey(alias, null) as SecretKey
  }
+ /** Protege un token local con una clave del Android Keystore y biometría fuerte. */
  fun enable(activity: FragmentActivity, uid: String, result: (String?) -> Unit) {
   runCatching {
    require(available()) { "Configura una huella o biometría fuerte en el dispositivo para activar esta opción." }
@@ -45,6 +47,7 @@ class BiometricGate(private val context: Context) {
    }, result)
   }.onFailure { result(it.message ?: "Biometría no disponible.") }
  }
+ /** Requiere biometría para recuperar el identificador de sesión local. */
  fun unlock(activity: FragmentActivity, expectedUid: String, result: (String?) -> Unit) {
   runCatching {
    require(available() && enabled(expectedUid)) { "Ingresa con tu correo y contraseña y activa la biometría desde Perfil." }
