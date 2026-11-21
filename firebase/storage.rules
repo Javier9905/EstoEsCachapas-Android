@@ -1,0 +1,15 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() { return request.auth != null; }
+    function seller() { return signedIn() && request.auth.token.role == 'seller'; }
+    function admin() { return signedIn() && request.auth.token.role == 'admin'; }
+    match /product-images/{sellerId}/{fileName} {
+      allow read: if true;
+      allow write: if signedIn() && (admin() || (seller() && request.auth.uid == sellerId)) &&
+        request.resource.size < 5 * 1024 * 1024 &&
+        request.resource.contentType.matches('image/.*');
+    }
+    match /{allPaths=**} { allow read, write: if false; }
+  }
+}
