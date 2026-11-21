@@ -35,6 +35,17 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
       - name: Compilar APK y ejecutar pruebas
         run: bash ./gradlew --no-daemon :app:assembleDebug :app:testDebugUnitTest
+      - name: Empaquetar proyecto Android Studio
+        if: success()
+        run: |
+          zip -r -q EstoEsCachapas_CodigoFuente.zip app gradle gradlew gradlew.bat build.gradle.kts settings.gradle.kts gradle.properties README.md Documentacion firebase firebase.json -x '*/build/*' 'app/google-services.json' 'local.properties'
+      - name: Guardar ZIP de código fuente
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: EstoEsCachapas-codigo
+          path: EstoEsCachapas_CodigoFuente.zip
+          retention-days: 7
       - name: Guardar APK de prueba
         if: success()
         uses: actions/upload-artifact@v4
