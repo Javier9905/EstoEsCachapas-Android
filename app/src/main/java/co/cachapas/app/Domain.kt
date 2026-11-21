@@ -4,7 +4,7 @@ import java.text.NumberFormat
 import java.util.Locale
 
 enum class Role(val label: String) { BUYER("Comprador"), SELLER("Vendedor"), ADMIN("Administrador") }
-data class Product(val id: String, var name: String, var category: String, var price: Long, var stock: Int, var description: String, var active: Boolean = true)
+data class Product(val id: String, var name: String, var category: String, var price: Long, var stock: Int, var description: String, var active: Boolean = true, var imagePath: String = "")
 data class User(val id: String, var name: String, var email: String, var role: Role, var salt: String, var hash: String, var active: Boolean = true, var phone: String = "", var address: String = "")
 data class OrderLine(val productId: String, val name: String, val price: Long, val quantity: Int)
 data class Order(val id: String, val userId: String, val created: Long, val lines: List<OrderLine>, val total: Long, val contact: String, val phone: String, val address: String, val note: String, var payment: String, var status: String)
