@@ -40,7 +40,7 @@ Estas credenciales son solo para pruebas locales; no deben reutilizarse en produ
 1. Entra con `vendedor@cachapas.demo`.
 2. Abre el Panel para consultar productos y pedidos.
 3. En Productos pulsa `Crear producto` y completa nombre, categoría, precio, inventario y descripción.
-4. Guarda y verifica el nuevo artículo en la lista.
+4. Opcionalmente elige una foto de galería y guarda. La foto queda en la instalación local, no en Firebase Storage.
 5. Usa `Editar producto` para corregir valores y `Eliminar del menú` para darlo de baja lógicamente.
 6. Abre Pedidos y, si hay un pedido con pago simulado aprobado, cambia su estado por las opciones permitidas.
 
@@ -61,7 +61,7 @@ Estas credenciales son solo para pruebas locales; no deben reutilizarse en produ
 - Los datos se almacenan localmente en el teléfono: no se sincronizan con Firebase.
 - Los pagos son simulados: no existe confirmación bancaria.
 - La recuperación de contraseña muestra un código local, no envía correo.
-- La tarifa y cobertura de domicilios aún no están implementadas.
+- Puedes solicitar coordenadas desde la pantalla de pedido aceptando el permiso de ubicación. La tarifa y cobertura de domicilios aún no están implementadas, por eso la compra con domicilio sigue deshabilitada.
 - Si la huella no está disponible, entra por correo y contraseña.
 
 ## 6. Lista para completar el PDF del manual
