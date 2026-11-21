@@ -82,7 +82,9 @@ class ScreenFragment: Fragment() {
  }
  private fun readLocation() {
   val manager=requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
-  val providers=listOf(LocationManager.GPS_PROVIDER,LocationManager.NETWORK_PROVIDER).filter { manager.isProviderEnabled(it) }
+  val fine=ContextCompat.checkSelfPermission(requireContext(),Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED
+  val providers=(if(fine) listOf(LocationManager.GPS_PROVIDER,LocationManager.NETWORK_PROVIDER) else listOf(LocationManager.NETWORK_PROVIDER))
+   .filter { manager.isProviderEnabled(it) }
   if(providers.isEmpty()) { showLocation(null);return }
   val cached=providers.mapNotNull { manager.getLastKnownLocation(it) }.maxByOrNull { it.time }
   if(cached!=null && System.currentTimeMillis()-cached.time<300_000L) { showLocation(cached);return }
