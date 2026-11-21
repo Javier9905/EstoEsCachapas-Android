@@ -51,12 +51,14 @@ class Store private constructor(context: Context) {
   val salt = ByteArray(16).also { SecureRandom().nextBytes(it) }.let(::encoded)
   return salt to hash(password, salt)
  }
+ /** Verifica las credenciales locales y establece la sesión de prueba. */
  fun login(email: String, password: String): User {
   val u = users.find { it.active && it.email.equals(email.trim(), true) }
   require(u != null && MessageDigest.isEqual(hash(password, u.salt).toByteArray(), u.hash.toByteArray())) { "Correo o contraseña incorrectos." }
   sessionId = u.id
   return u
  }
+ /** Registra un comprador; el cliente no puede autoasignarse un rol privilegiado. */
  fun register(name: String, email: String, password: String): User = createUser(name, email, Role.BUYER, password)
  private fun createUser(name: String, email: String, role: Role, password: String): User {
   require(name.trim().length >= 3) { "Escribe tu nombre completo." }
@@ -66,12 +68,14 @@ class Store private constructor(context: Context) {
   val user = User(UUID.randomUUID().toString(), name.trim(), email.trim().lowercase(), role, salt, hash)
   users.add(user); persist(); return user
  }
+ /** Cambia la contraseña local tras la verificación de demostración. */
  fun resetPassword(email: String, password: String) {
   val u = users.find { it.active && it.email.equals(email.trim(), true) } ?: error("Cuenta no disponible.")
   val (salt, hash) = credentials(password); u.salt = salt; u.hash = hash
   if (sessionId == u.id) sessionId = null
   persist()
  }
+ /** Permite al administrador mantener usuarios y roles en este dispositivo. */
  fun saveUser(id: String?, name: String, email: String, role: Role, password: String, active: Boolean) {
   require(current?.role == Role.ADMIN) { "Acceso reservado al administrador." }
   if (id == null) { createUser(name, email, role, password).also { it.active = active }; persist(); return }
@@ -85,12 +89,14 @@ class Store private constructor(context: Context) {
   newCredentials?.let { u.salt = it.first; u.hash = it.second }
   persist()
  }
+ /** Actualiza solamente el perfil de la sesión local activa. */
  fun profile(name: String, email: String, phone: String, address: String) {
   val u = current ?: error("Inicia sesión.")
   require(name.trim().length >= 3 && Rules.email(email.trim())) { "Revisa nombre y correo." }
   require(users.none { it.id != u.id && it.email.equals(email.trim(), true) }) { "El correo ya está registrado." }
   u.name = name.trim(); u.email = email.trim().lowercase(); u.phone = phone.trim(); u.address = address.trim(); persist()
  }
+ /** Crea o actualiza un producto y asocia una foto local cuando exista. */
  fun saveProduct(id: String?, name: String, category: String, price: Long, stock: Int, description: String, active: Boolean, imagePath: String = "") {
   require(current?.role?.let(Rules::canManage) == true) { "Acceso reservado al negocio." }
   Rules.product(name, price, stock); require(category in Rules.categories); require(description.trim().isNotEmpty()) { "Escribe una descripción." }
@@ -99,6 +105,7 @@ class Store private constructor(context: Context) {
   else { p.name = name.trim(); p.category = category; p.price = price; p.stock = stock; p.description = description.trim(); p.active = active; p.imagePath = imagePath }
   persist()
  }
+ /** Realiza una baja lógica para conservar el historial de pedidos. */
  fun deactivateProduct(id: String) {
   require(current?.role?.let(Rules::canManage) == true) { "Acceso reservado al negocio." }
   products.first { it.id == id }.active = false; persist()
@@ -108,10 +115,12 @@ class Store private constructor(context: Context) {
   require(u.role == Role.BUYER) { "El carrito pertenece al comprador." }
   return carts.getOrPut(u.id) { mutableMapOf() }
  }
+ /** Añade unidades al carrito sin superar el inventario disponible. */
  fun add(id: String, quantity: Int) {
   val p = products.first { it.id == id }; require(p.active) { "El producto ya no está disponible." }
   Rules.quantity(quantity, p.stock); val c = cart(); val next = (c[id] ?: 0) + quantity; Rules.quantity(next, p.stock); c[id] = next; persist()
  }
+ /** Ajusta o elimina una línea del carrito del comprador. */
  fun updateCart(id: String, quantity: Int) {
   if (quantity <= 0) cart().remove(id) else {
    val p = products.first { it.id == id }; require(p.active) { "Retira el producto que ya no está disponible." }
@@ -121,6 +130,7 @@ class Store private constructor(context: Context) {
  }
  fun clearCart() { cart().clear(); persist() }
  fun cartLines() = cart().map { (id, q) -> val p = products.first { it.id == id }; OrderLine(id, p.name, p.price, q) }
+ /** Registra un pedido de PRUEBA: nunca confirma un cobro bancario. */
  @Synchronized fun checkout(contact: String, phone: String, note: String, payment: String): Order {
   val u = current ?: error("Inicia sesión.")
   require(contact.trim().length >= 3) { "Escribe el nombre de quien recoge." }
@@ -132,10 +142,12 @@ class Store private constructor(context: Context) {
   if (payment == "Aprobado") { lines.forEach { l -> products.first { it.id == l.productId }.stock -= l.quantity }; cart().clear() }
   orders.add(order); persist(); return order
  }
+ /** Filtra pedidos según el rol y el usuario local conectado. */
  fun visibleOrders(): List<Order> {
   val u = current ?: return emptyList()
   return orders.filter { u.role != Role.BUYER || it.userId == u.id }.sortedByDescending { it.created }
  }
+ /** Valida las transiciones del pedido y el inventario local. */
  fun changeOrder(id: String, next: String) {
   val u = current ?: error("Inicia sesión.")
   val o = visibleOrders().first { it.id == id }
@@ -158,6 +170,7 @@ class Store private constructor(context: Context) {
   val cs = j.getJSONObject("carts"); cs.keys().forEach { uid -> val map = mutableMapOf<String, Int>(); val c = cs.getJSONObject(uid); c.keys().forEach { map[it] = c.getInt(it) }; carts[uid] = map }
  }
  private fun JSONArray.each(block: (JSONObject) -> Unit) { for (i in 0 until length()) block(getJSONObject(i)) }
+ /** Serializa el estado local; no sustituye Firestore. */
  private fun persist() {
   val j = JSONObject()
   j.put("products", JSONArray(products.map { p -> JSONObject().put("id",p.id).put("name",p.name).put("category",p.category).put("price",p.price).put("stock",p.stock).put("description",p.description).put("active",p.active).put("imagePath",p.imagePath) }))
