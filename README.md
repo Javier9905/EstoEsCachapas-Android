@@ -1,55 +1,47 @@
-# Esto Es Cachapas y Algo Más — Android
+# Esto Es Cachapas y Algo Más
 
-Proyecto académico para **Desarrollo de Aplicaciones Móviles Nativas** (UCompensar), presentado por **Javier Andrés Barrera Cárdenas**.
+Aplicación Android para consultar el menú de **Esto Es Cachapas y Algo Más**, organizar pedidos y administrar la información del negocio mediante perfiles de comprador, vendedor y administrador.
 
-Aplicación Android en Kotlin con interfaz XML y tres perfiles: **Comprador, Vendedor y Administrador**. Incluye catálogo precargado de cachapas y otros productos, búsqueda, carrito, registro local de pedidos, gestión local de productos y usuarios, reportes simulados y código para acceso biométrico mediante AndroidX Biometric.
+Desarrollada en Kotlin para Android, con interfaces XML y una navegación adaptada a cada rol.
 
-## Estado del proyecto — 21 de noviembre de 2026
+## Funciones de la aplicación
 
-**Prototipo académico local. No es una aplicación de comercio electrónico lista para producción.**
+| Perfil | Funciones disponibles |
+|---|---|
+| **Comprador** | Registro, inicio de sesión, menú, búsqueda por categorías, detalle de productos, carrito, pedidos e información de perfil. |
+| **Vendedor** | Administración del catálogo, precios, inventario, fotografías de productos y consulta de pedidos. |
+| **Administrador** | Gestión de usuarios, asignación de roles, productos, pedidos y reportes de actividad. |
 
-- Implementado en el código: navegación por rol, registro/ingreso local, CRUD local, carrito, historial, reportes de prueba, soporte de biometría, selector de fotografías guardadas en el dispositivo y captura puntual de coordenadas con permiso.
-- **Pendiente:** Firebase Authentication, Cloud Firestore, Firebase Storage, subida de imágenes a Firebase Storage, geolocalización asociada a pedidos con domicilio habilitado y pasarela de pagos certificada.
-- **No verificado aquí:** compilación actual en Android Studio, funcionamiento en teléfono físico y grabación del video de lanzamiento. Se añadió una comprobación automática en `.github/workflows/android-ci.yml`, pendiente de comprobar que se ejecute correctamente en GitHub Actions.
-- El selector de pago actual solo simula `Aprobado / Pendiente / Rechazado`; **no hace cobros**.
-- El archivo `APK/Cachapas.apk` pertenece a la actividad anterior y no demuestra cumplimiento de esta entrega final.
+El catálogo incluye cachapas y otros alimentos organizados por categorías. Los productos muestran precio, descripción y disponibilidad.
 
-## Cómo abrir el proyecto
+## Acceso a la aplicación
 
-1. Descarga o clona el repositorio.
-2. Abre la carpeta raíz en **Android Studio**.
-3. Espera a que finalice **Gradle Sync**.
-4. Conecta un teléfono Android compatible y ejecuta la app.
-5. Revisa los logs/errores de compilación y prueba todas las funciones relevantes.
+El proyecto se puede abrir en Android Studio desde la carpeta principal del repositorio. Requiere Java 17 y un dispositivo Android compatible con API 26 o superior.
 
-Configuración de referencia: **Kotlin 2.0.21, AGP 8.7.3, Java 17, compileSdk 35, minSdk 26**.
+### Cuentas de demostración
 
-## Cuentas locales de demostración
-
-| Rol | Correo |
+| Perfil | Correo |
 |---|---|
 | Comprador | `comprador@cachapas.demo` |
 | Vendedor | `vendedor@cachapas.demo` |
 | Administrador | `admin@cachapas.demo` |
 
-Contraseña en el entorno de prueba: `Cachapas2026!`. Nunca reutilices esta contraseña en un sistema real.
+**Contraseña de demostración:** `Cachapas2026!`
 
-## Documentación de la actividad final
+Las cuentas permiten conocer las diferentes pantallas y opciones de la aplicación.
 
-- [Documento técnico definitivo (Markdown)](Documentacion/Documento_Tecnico_Final_2026.md)
-- [Manual de usuario (Markdown)](Documentacion/Manual_Usuario_Final_2026.md)
-- [Guion del video de lanzamiento](Documentacion/Guion_Video_Final_2026.md)
-- Documentos PDF y DOCX diagramados: forman parte de la entrega académica; la versión con portada artística se entrega aparte en la plataforma.
-- La carpeta `Documentacion` conserva, además, los archivos de la **actividad 4**.
+## Información de uso
 
-## Entregables solicitados por el docente
+Los pedidos y resultados de pago corresponden a una **simulación académica**: no se realizan cobros ni se solicitan datos bancarios. La información de usuarios, productos y pedidos se conserva de forma local en el dispositivo.
 
-1. Documento técnico definitivo coherente con lo implementado.
-2. Manual de usuario con **capturas reales** del aplicativo de los tres roles.
-3. ZIP completo de Android Studio **compilable y comprobado**.
-4. Repositorio GitHub público con código fuente y comentarios explicativos.
-5. Video de lanzamiento de máximo **un minuto**, capturado en un dispositivo físico (no emulador).
+El acceso mediante huella utiliza la autenticación biométrica del sistema Android, cuando el dispositivo ofrece esta función. La ubicación se consulta únicamente cuando la persona utiliza la opción correspondiente y concede permiso.
 
-Los requisitos de Firestore, Storage, GPS y pasarela deben implementarse antes de declarar que el proyecto final los cumple.
+## Documentación
 
-> Esta documentación separa las funciones existentes de las pendientes. No se presentan como pruebas las capturas, compilaciones o integraciones que todavía no se han realizado.
+- [Manual de usuario](Documentacion/Manual_Usuario_Final_2026.md)
+- [Documento técnico](Documentacion/Documento_Tecnico_Final_2026.md)
+
+---
+
+**Javier Andrés Barrera Cárdenas**  
+Ingeniería de Software · Fundación Universitaria Compensar
