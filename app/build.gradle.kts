@@ -5,6 +5,14 @@ android {
  defaultConfig { applicationId = "co.cachapas.app"; minSdk = 26; targetSdk = 35; versionCode = 1; versionName = "1.0-academica"; testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" }
  compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
  kotlinOptions { jvmTarget = "17" }
+ // Un ID distinto para depuración evita conflictos con APK académicos anteriores
+ // firmados con otra clave. La versión release mantiene co.cachapas.app.
+ buildTypes {
+  getByName("debug") {
+   applicationIdSuffix = ".prueba2026"
+   versionNameSuffix = "-instalable"
+  }
+ }
  buildFeatures { viewBinding = true }
  lint { abortOnError = true; checkReleaseBuilds = false }
 }
