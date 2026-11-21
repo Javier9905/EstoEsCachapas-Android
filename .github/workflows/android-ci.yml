@@ -2,7 +2,16 @@ name: Validación Android
 on:
   push:
     branches: [ main, actividad-final-2026 ]
+    paths-ignore:
+      - 'Documentacion/**'
+      - 'firebase/**'
+      - 'firebase.json'
+      - 'README.md'
   workflow_dispatch:
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
