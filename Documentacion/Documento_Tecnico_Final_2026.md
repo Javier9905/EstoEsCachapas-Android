@@ -1,82 +1,105 @@
-# Documento técnico definitivo — Esto Es Cachapas y Algo Más
+# Documento técnico
+## Esto Es Cachapas y Algo Más — Android
 
-**Asignatura:** Desarrollo de Aplicaciones Móviles Nativas  
-**Estudiante:** Javier Andrés Barrera Cárdenas  
-**Fecha:** 20 de noviembre de 2026  
-**Universidad:** UCompensar
+**Desarrollo de Aplicaciones Móviles Nativas**  
+**Javier Andrés Barrera Cárdenas**  
+**Ingeniería de Software · UCompensar**
 
-## 1. Introducción
+## 1. Descripción del sistema
 
-En este proyecto seguí trabajando en Esto Es Cachapas y Algo Más, dado que mi intención es llevar el menú del negocio a un aplicativo donde el comprador pueda buscar los productos y registrar un pedido y, por su parte, el vendedor y el administrador encuentren sus propias herramientas. En esta fase revisé las funciones presentes en el repositorio y diferencié lo que está implementado de aquello que necesita integraciones externas.
+Esto Es Cachapas y Algo Más es una aplicación Android orientada a la consulta de un menú de alimentos y la administración de pedidos mediante tres perfiles. El comprador utiliza el catálogo y el carrito, mientras que el vendedor gestiona los productos y el administrador consulta usuarios, permisos e información del negocio.
 
-## 2. Objetivo y alcance
+El funcionamiento del aplicativo se organiza a partir de pantallas independientes, modelos de datos y un repositorio local que mantiene la información dentro del dispositivo.
 
-El comprador puede revisar el menú, agregar productos al carrito y consultar el pedido registrado. El vendedor administra productos e identifica pedidos que deben atenderse. El administrador dispone de funciones para gestionar usuarios y revisar un reporte de ventas de demostración. El alcance actualmente **es local y académico**; no es una plataforma de comercio electrónico lista para producción.
+## 2. Entorno tecnológico
 
-## 3. Arquitectura revisada
-
-| Archivo | Función |
+| Elemento | Tecnología |
 |---|---|
-| `MainActivity.kt` | Navegación, permisos por rol y cierre de sesión. |
-| `Activities.kt` | Ingreso, registro y recuperación local de cuenta. |
-| `ScreenFragment.kt` | Catálogo, carrito, pedidos, perfil, usuarios, productos y reportes. |
-| `Store.kt` | Operaciones CRUD, reglas de autorización local y persistencia JSON en SharedPreferences. |
-| `Domain.kt` | Modelos y reglas del negocio. |
-| `BiometricGate.kt` | BiometricPrompt y Android Keystore para biometría local. |
-| `res/layout` y `assets/menu.json` | Interfaz XML y menú inicial. |
+| Lenguaje | Kotlin |
+| Entorno | Android Studio |
+| Interfaz | XML, Material Components y Fragments |
+| SDK de compilación | Android 35 |
+| Versión mínima | Android API 26 |
+| Java | Java 17 |
+| Acceso biométrico | AndroidX Biometric y Android Keystore |
+| Persistencia | SharedPreferences con representación JSON |
+| Recursos iniciales | Archivo local `assets/menu.json` |
 
-## 4. Funcionamiento por roles
+## 3. Organización del código
 
-**Comprador:** registro, autenticación, consulta y búsqueda de catálogo, detalle de producto, carrito, simulación de pedido, historial y actualización de perfil.
+La estructura diferencia las actividades de acceso, la navegación, los modelos y las reglas del negocio, dado que cada una de estas partes cumple una función específica dentro de la aplicación.
 
-**Vendedor:** panel de ventas, creación y edición de productos, baja lógica de productos y seguimiento a pedidos.
+| Componente | Descripción |
+|---|---|
+| `Activities.kt` | Pantallas de ingreso, registro y recuperación de acceso. |
+| `MainActivity.kt` | Navegación principal y menú correspondiente a cada rol. |
+| `ScreenFragment.kt` | Interfaces del catálogo, carrito, pedidos, productos, usuarios y reportes. |
+| `Domain.kt` | Entidades de usuarios, productos y pedidos; validaciones de cantidades y estados. |
+| `Store.kt` | Operaciones de lectura y escritura de datos locales, sesiones y reglas del negocio. |
+| `BiometricGate.kt` | Autenticación biométrica mediante componentes de Android. |
+| `res/layout` | Diseño XML de las pantallas. |
+| `assets/menu.json` | Información inicial del menú. |
 
-**Administrador:** panel, mantenimiento de usuarios y roles, gestión de productos y reporte de ventas **simuladas**.
+## 4. Modelo de información
 
-## 5. Seguridad y gestión de usuarios
+### Usuarios
 
-El repositorio usa el algoritmo PBKDF2WithHmacSHA256 con una sal aleatoria para generar el hash local de las contraseñas. Los permisos dependen del rol asignado en el almacén local, no de una autorización de servidor. La recuperación de contraseña muestra un código **dentro de la aplicación**: no envía correos. La biometría aprovecha AndroidX Biometric y Android Keystore sin almacenar una huella; debe validarse en un celular físico compatible.
+Cada usuario tiene un identificador, nombre, correo, rol y estado de acceso. Los perfiles disponibles son comprador, vendedor y administrador. Las contraseñas locales se procesan mediante PBKDF2WithHmacSHA256 con una sal aleatoria.
 
-## 6. Productos y compras
+### Productos
 
-El catálogo inicial proviene de `app/src/main/assets/menu.json`. Los productos se filtran por categorías y se agregan al carrito con validación de cantidades y disponibilidad. La pantalla de compra permite seleccionar un resultado `Aprobado`, `Pendiente` o `Rechazado`, pero **no existe un cobro real** ni una confirmación de un proveedor certificado. Los cambios de productos, usuarios y pedidos permanecen en el almacenamiento local de la instalación.
+Los artículos del catálogo contienen identificador, nombre, categoría, precio, inventario, descripción y estado de disponibilidad. También pueden asociar una fotografía seleccionada de la galería y guardada en el almacenamiento privado de la aplicación.
 
-## 7. Matriz de cumplimiento
+### Carrito y pedidos
 
-| Requisito del docente | Estado verificable en código | Trabajo pendiente |
-|---|---|---|
-| Autenticación para tres roles | Implementada localmente | Migrar a Firebase Auth y reglas de servidor |
-| Biometría | Código implementado | Probar en dispositivo físico |
-| CRUD de usuarios en Firestore | No implementado | Configurar Firestore y reglas seguras |
-| CRUD de productos con imágenes | CRUD local y foto seleccionable de galería (almacenamiento privado local) | Subir fotografías a Firebase Storage y verificar cámara |
-| Carrito, órdenes e historial en Firestore | Locales | Sincronización y persistencia segura |
-| Geolocalización para entrega | Captura de coordenadas bajo permiso en pantalla de pedido | Asociarlas a entregas habilitadas y sincronizar datos |
-| Pagos certificados | Simulación | Pasarela en sandbox, backend y confirmación de transacción |
-| ZIP sin errores de compilación | No verificado en esta revisión | Gradle Sync, compilación y empaquetado |
-| Video de lanzamiento en celular | Pendiente | Grabar 1 minuto en dispositivo físico |
-| Capturas en manual | Pendientes | Capturar pantallas reales de las tres cuentas |
+El carrito conserva productos y cantidades asociadas al comprador. En la confirmación se calculan importes a partir de los precios registrados y se genera un pedido con su fecha, número de referencia, productos, datos de contacto y estado.
 
-## 8. Ampliaciones realizadas en el repositorio\n\nSe añadió la selección de una imagen de galería al formulario de productos y su copia al almacenamiento privado del dispositivo, junto con el campo `imagePath` de la entidad Product. También se incorporó una solicitud puntual de ubicación con permisos de Android en la pantalla de confirmación. La entrega a domicilio sigue bloqueada mientras no exista tarifa y cobertura validada. Estas ampliaciones requieren compilarse y probarse en un teléfono para considerarlas verificadas.\n\n## 9. Tecnologías
+## 5. Funciones por perfil
 
-Kotlin 2.0.21, Android Gradle Plugin 8.7.3, Java 17, Android SDK 35, minSdk 26, XML, AppCompat, Fragments, Material Components y AndroidX Biometric, según los archivos de configuración existentes.
+**Comprador.** Dispone de registro e inicio de sesión, consulta del menú, filtros de categoría, detalle de alimentos, administración del carrito, confirmación de pedidos de prueba, historial y actualización del perfil.
 
-## 9. Pruebas antes de entregar
+**Vendedor.** Accede al panel del negocio, crea y edita productos, modifica el inventario, selecciona fotografías y consulta los pedidos para realizar cambios de estado autorizados.
 
-1. Importar el proyecto en Android Studio y completar Gradle Sync.
-2. Compilar e instalar en un teléfono físico.
-3. Verificar registro, inicio de sesión, recuperación local, cierre y biometría.
-4. Revisar búsqueda, detalle, carrito, subtotal y creación de pedidos simulados.
-5. Crear/editar un producto y confirmar que se refleje en el catálogo.
-6. Gestionar usuarios y consultar reportes desde el rol administrador.
-7. Probar las integraciones externas que realmente se implementen.
-8. Tomar capturas originales y grabar video de máximo un minuto.
+**Administrador.** Gestiona cuentas y roles, consulta productos y pedidos y visualiza reportes que resumen los registros de la aplicación.
 
-## 10. Conclusiones
+## 6. Navegación
 
-Este trabajo me permitió organizar una experiencia de compra y darle herramientas a los distintos roles del negocio. El recorrido principal del aplicativo y los datos de prueba existen en el proyecto; sin embargo, para presentarlo como una tienda Android completamente funcional todavía se requieren servicios externos y pruebas en un equipo físico. Por esta razón, el alcance se documenta sin atribuirle operaciones que aún no realiza.
+La aplicación utiliza una actividad principal que incorpora diferentes fragmentos según la pantalla seleccionada. El menú inferior se adapta a la identidad del usuario, de manera que el comprador encuentra las opciones relacionadas con sus compras y el negocio accede a sus funciones administrativas.
 
-**Código:** https://github.com/Javier9905/EstoEsCachapas-Android
+Los permisos de acceso se verifican mediante el rol de la sesión local.
 
-**Referencias:** [Android Biometric](https://developer.android.com/identity/sign-in/biometric-auth), [Firebase Firestore](https://firebase.google.com/docs/firestore), [Firebase Storage](https://firebase.google.com/docs/storage), [Permisos de ubicación](https://developer.android.com/develop/sensors-and-location/location/permissions).
+## 7. Catálogo y fotografías
 
-> La versión diagramada en PDF, con portada artística, se entrega como archivo académico aparte. La documentación de GitHub no sustituye la compilación ni las pruebas requeridas.
+El menú inicial se carga desde un archivo JSON incluido con la aplicación. La búsqueda permite filtrar productos por nombre y categoría; el detalle reúne precio, descripción y disponibilidad.
+
+La imagen de un artículo se selecciona desde la galería mediante el selector de archivos de Android y se copia al almacenamiento privado del dispositivo. La ruta local queda asociada al producto y se utiliza para presentar la fotografía en las pantallas del catálogo y administración.
+
+## 8. Ubicación y pedidos
+
+La aplicación permite solicitar una ubicación puntual desde la confirmación del pedido. El permiso depende de la aprobación del usuario en Android y las coordenadas se muestran como referencia para la dirección escrita.
+
+El registro de pedidos utiliza recogida en el local. Para representar los posibles resultados del proceso de compra, el sistema muestra los estados de pago **Aprobado**, **Pendiente** y **Rechazado**, todos ellos **simulados**. No existe una conexión bancaria ni se realiza un cobro.
+
+Los pedidos registrados pueden consultarse desde el historial y siguen las reglas de transición definidas en el dominio del aplicativo.
+
+## 9. Seguridad y tratamiento de información
+
+Las contraseñas locales se almacenan como hashes con sal. La biometría utiliza las funciones proporcionadas por Android y su almacén seguro de claves, sin conservar huellas digitales.
+
+La información de usuarios, productos, carritos y pedidos se guarda localmente; en consecuencia, no se intercambia automáticamente entre diferentes dispositivos. La aplicación bloquea el tráfico sin cifrar mediante su configuración de Android.
+
+## 10. Consideraciones de uso
+
+La aplicación constituye un entorno de demostración de compras. Los precios y estados de pago se utilizan para representar el recorrido del pedido y los reportes corresponden a operaciones simuladas.
+
+Este alcance permite consultar el menú, registrar compras de prueba y administrar la información desde los tres roles, manteniendo diferenciadas las funciones de cada usuario.
+
+## Referencias técnicas
+
+- [Arquitectura de aplicaciones Android](https://developer.android.com/topic/architecture)
+- [Autenticación biométrica en Android](https://developer.android.com/identity/sign-in/biometric-auth)
+- [Permisos de ubicación](https://developer.android.com/develop/sensors-and-location/location/permissions)
+
+---
+
+**Esto Es Cachapas y Algo Más · Aplicación Android**
